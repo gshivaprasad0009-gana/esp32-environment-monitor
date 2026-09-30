@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Data & models (generated at runtime)
+data/
+*.db
+*.joblib
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
