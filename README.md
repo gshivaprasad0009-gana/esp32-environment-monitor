@@ -2,6 +2,10 @@
 
 An end-to-end IoT project: an ESP32 with a DHT22 sensor streams live temperature and humidity over MQTT, a Python service stores the readings, a Streamlit dashboard visualises them in real time, and an Isolation Forest model flags unusual patterns — like a heat spike — before they become a problem.
 
+## 🎯 The Problem It Solves
+
+Monitoring a room, lab, or equipment rack usually means either checking a display by hand or buying a closed commercial system you cannot extend. This project builds the whole path yourself — sensor to dashboard to alert — so the data is yours and every layer can be changed. The anomaly detection matters because a slow drift or a sudden spike is easy to miss on a chart but obvious to a model watching the pattern.
+
 ```
 [DHT22 sensor] → [ESP32] → WiFi → [MQTT broker] → [Python ingest] → [SQLite] → [Streamlit dashboard]
                                                                   ↘ [Isolation Forest ML] — anomaly flags
@@ -89,6 +93,7 @@ See [`firmware/README.md`](firmware/README.md) for wiring, libraries, and setup.
 
 - [ ] Alert on anomaly (email / Telegram notification)
 - [ ] Add more sensors (air quality, light)
+- [ ] Add screenshots and a demo GIF to this README
 - [ ] Deploy dashboard to the cloud
 - [ ] Multiple ESP32 devices on one dashboard
 
