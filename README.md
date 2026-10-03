@@ -18,6 +18,7 @@ Monitoring a room, lab, or equipment rack usually means either checking a displa
 - 📊 **Live dashboard** — auto-refreshing charts of temperature & humidity
 - 🤖 **ML anomaly detection** — Isolation Forest flags abnormal readings
 - 🧪 **Works without hardware** — a simulator publishes the same messages as the real ESP32
+- ✅ **Tested** — unit tests cover the pipeline logic, run automatically on every push
 
 ## 📁 Project structure
 
@@ -33,7 +34,12 @@ esp32-environment-monitor/
 │   └── dashboard.py                   # Streamlit live dashboard
 ├── ml/
 │   └── train_model.py                 # trains the Isolation Forest anomaly detector
+├── tests/
+│   └── test_pipeline.py               # unit tests (no hardware or network needed)
+├── .github/workflows/tests.yml        # runs the tests on every push
 ├── data/                              # (generated) SQLite DB + trained model
+├── ROADMAP.md                         # planned improvements, in build order
+├── LICENSE
 └── requirements.txt
 ```
 
@@ -71,6 +77,16 @@ esp32-environment-monitor/
 
    Open `http://localhost:8501` and watch the live data roll in. The simulator injects occasional temperature spikes — watch the ML model catch them in the anomaly panel.
 
+## 🧪 Tests
+
+The pipeline logic — the database layer, MQTT message handling, the simulator's output, and the anomaly detector — is covered by unit tests that need no hardware and no network connection:
+
+```bash
+pytest -q
+```
+
+These run automatically on every push via GitHub Actions (see `.github/workflows/tests.yml`).
+
 ## 🔩 Running on real hardware
 
 See [`firmware/README.md`](firmware/README.md) for wiring, libraries, and setup. Once flashed, the ESP32 publishes to the same MQTT topic, so the rest of the pipeline works unchanged.
@@ -88,18 +104,19 @@ See [`firmware/README.md`](firmware/README.md) for wiring, libraries, and setup.
 - **Backend:** Python, paho-mqtt, SQLite
 - **Dashboard:** Python, Streamlit, pandas
 - **ML:** scikit-learn (Isolation Forest)
+- **Testing:** pytest, GitHub Actions
 
 ## 🗺️ Roadmap
 
-- [ ] Alert on anomaly (email / Telegram notification)
-- [ ] Add more sensors (air quality, light)
-- [ ] Add screenshots and a demo GIF to this README
-- [ ] Deploy dashboard to the cloud
-- [ ] Multiple ESP32 devices on one dashboard
+Planned improvements — small tweaks, extra sensors, alerts, real hardware, and an AWS migration — are tracked in [ROADMAP.md](ROADMAP.md), in the order they should be built.
 
 ## 🤝 Contributing
 
 Suggestions welcome — open an issue or pull request.
+
+## 📄 License
+
+Released under the [MIT License](LICENSE).
 
 ## ✍️ Author
 
