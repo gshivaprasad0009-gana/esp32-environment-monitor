@@ -4,6 +4,10 @@ MQTT Ingest Service — receives sensor readings and stores them in SQLite.
 Subscribes to the MQTT topic the ESP32 (or the simulator) publishes on,
 parses the JSON payload, and inserts each reading into `data/sensors.db`.
 
+Configuration (environment variables, all optional):
+    MQTT_BROKER   broker hostname   (default test.mosquitto.org)
+    MQTT_PORT     broker port       (default 1883)
+
 Usage:
     python ingest.py
 Stop with Ctrl+C.
@@ -16,16 +20,22 @@ from datetime import datetime, timezone
 
 import paho.mqtt.client as mqtt
 
-BROKER = "test.mosquitto.org"
-PORT = 1883
+BROKER = os.environ.get("MQTT_BROKER", "test.mosquitto.org")
+PORT = int(os.environ.get("MQTT_PORT", "1883"))
 TOPIC = "esp32/env-monitor/data"
 
 DB_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 DB_PATH = os.path.join(DB_DIR, "sensors.db")
 
+_COLUMNS = ["device", "temperature", "humidity", "light", "ts"]
+
 
 def init_db() -> sqlite3.Connection:
-    """Create the database and readings table if they don't exist."""
+    """Create the database and readings table, adding any missing columns.
+
+    The `light` column was added in v1.1 — an older database will not have it,
+    so we add it in place rather than making people delete their data.
+    """
     os.makedirs(DB_DIR, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.execute(
@@ -35,10 +45,16 @@ def init_db() -> sqlite3.Connection:
             device      TEXT NOT NULL,
             temperature REAL NOT NULL,
             humidity    REAL NOT NULL,
+            light       REAL,
             ts          TEXT NOT NULL
         )
         """
     )
+
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(readings)")}
+    if "light" not in existing:
+        conn.execute("ALTER TABLE readings ADD COLUMN light REAL")
+
     conn.commit()
     return conn
 
@@ -57,18 +73,21 @@ def on_message(client, userdata, msg):
     conn = userdata["db"]
     try:
         reading = json.loads(msg.payload.decode())
+        light = reading.get("light")
         conn.execute(
-            "INSERT INTO readings (device, temperature, humidity, ts) VALUES (?, ?, ?, ?)",
+            "INSERT INTO readings (device, temperature, humidity, light, ts) "
+            "VALUES (?, ?, ?, ?, ?)",
             (
                 reading.get("device", "unknown"),
                 float(reading["temperature"]),
                 float(reading["humidity"]),
+                float(light) if light is not None else None,
                 reading.get("ts", datetime.now(timezone.utc).isoformat()),
             ),
         )
         conn.commit()
         print(f"Stored: {reading}")
-    except (json.JSONDecodeError, KeyError, ValueError) as e:
+    except (json.JSONDecodeError, KeyError, ValueError, TypeError) as e:
         print(f"Skipping bad message ({e}): {msg.payload!r}")
 
 

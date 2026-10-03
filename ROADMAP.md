@@ -1,59 +1,57 @@
 # Roadmap
 
-Where this project is going, in the order it should be built. Each level is a
-working milestone — finish it, commit it, move on.
+Where this project is going, in the order it was built. Each level is a working
+milestone.
 
-## ✅ Done
+## ✅ Level 1 — Small tweaks *(done)*
 
-- ESP32 firmware: DHT22 readings published over MQTT
-- Hardware-free simulator publishing the same message format
-- Ingest service: MQTT → SQLite
-- Live Streamlit dashboard with charts and metrics
-- Isolation Forest anomaly detection
-- Unit tests for the pipeline logic
-- MIT license and this roadmap
+- [x] Make the publish interval configurable (`PUBLISH_INTERVAL_SECONDS`)
+- [x] Add a Celsius / Fahrenheit toggle to the dashboard
+- [x] Make the anomaly sensitivity adjustable from the dashboard
 
-## Level 1 — Small tweaks
+## ✅ Level 2 — More sensors *(done)*
 
-Low-risk changes that build familiarity with the code.
+- [x] Add a light sensor (LDR) to the firmware, simulator, database and dashboard
+- [x] Show light as its own metric and chart
+- [x] Include light in the anomaly detection features
 
-- [ ] Make the publish interval configurable (currently 5 seconds)
-- [ ] Add a Celsius / Fahrenheit toggle to the dashboard
-- [ ] Make the anomaly sensitivity adjustable from the dashboard
+## ✅ Level 3 — Alerts *(done)*
 
-## Level 2 — More sensors
+- [x] Alert when a reading breaches a temperature threshold (`ALERT_TEMP_THRESHOLD`)
+- [x] Optional Telegram notifications (console fallback with no configuration)
+- [x] A "recent alerts" panel on the dashboard
 
-- [ ] Add a second sensor (air quality or light) to the firmware and pipeline
-- [ ] Show the new reading as its own chart on the dashboard
+## ⏳ Level 4 — Real hardware *(needs parts)*
 
-## Level 3 — Alerts
+Cannot be done in software — this needs the physical components.
 
-Turn monitoring into alerting.
-
-- [ ] Send a notification (email or Telegram) when an anomaly is detected
-- [ ] Add a configurable threshold so obvious spikes alert instantly
-- [ ] Add a "last alert" panel to the dashboard
-
-## Level 4 — Real hardware
-
-- [ ] Order an ESP32 DevKit V1 and a DHT22 module
+- [ ] Order an ESP32 DevKit V1, a DHT22 module and an LDR
 - [ ] Flash the firmware and confirm real readings reach the dashboard
 - [ ] Document the wiring with photos
 
-## Level 5 — Migrate to AWS
+The firmware already supports all three sensors, so once the parts arrive this
+is a flashing exercise rather than a coding one. See `firmware/README.md`.
 
-The flagship step: move the whole pipeline onto AWS.
+## ⏳ Level 5 — Migrate to AWS *(needs an AWS account)*
+
+The flagship step. It cannot be completed from here because it requires an AWS
+account with billing and credentials — it should be built by you, in your own
+account, following `docs/aws-migration.md`.
 
 - [ ] Replace the public MQTT broker with **AWS IoT Core**
 - [ ] Replace the ingest script with a **Lambda** function
-- [ ] Replace SQLite with **DynamoDB** (or Timestream for time-series data)
+- [ ] Replace SQLite with **DynamoDB**
 - [ ] Host the dashboard on **EC2** or **App Runner**
 - [ ] Add an architecture diagram showing the AWS deployment
 
-## Level 6 — Polish
+## ✅ Level 6 — Polish *(done, except the app screenshot)*
 
-- [ ] Add a screenshot and a short demo GIF to the README
-- [ ] Add a `CONTRIBUTING.md`
+- [x] Add an architecture diagram (`docs/architecture.png`)
+- [x] Add a sample-output chart (`docs/sample-output.png`)
+- [x] Add a `CONTRIBUTING.md`
+- [ ] Add a screenshot of the running dashboard — this has to be captured from
+      a machine where the app is running (`streamlit run backend/dashboard.py`,
+      then screenshot the browser). It could not be captured automatically here.
 - [ ] Tag a `v1.0.0` release
 
 ## Notes
