@@ -49,10 +49,10 @@ account, following `docs/aws-migration.md`.
 - [x] Add an architecture diagram (`docs/architecture.png`)
 - [x] Add a sample-output chart (`docs/sample-output.png`)
 - [x] Add a `CONTRIBUTING.md`
+- [x] Tag a `v1.0.0` release
 - [ ] Add a screenshot of the running dashboard — this has to be captured from
       a machine where the app is running (`streamlit run backend/dashboard.py`,
-      then screenshot the browser). It could not be captured automatically here.
-- [ ] Tag a `v1.0.0` release
+      then screenshot the browser). It could not be captured automatically.
 
 ## Notes
 
